@@ -17,10 +17,20 @@ namespace QueryMaster
         string sqlfolder = "Z:\\Automatisierung\\sql";
         string seperator = ";";
         Boolean addHeadline = true;
+        Boolean readLineFromDB = false;
 
         public Form1()
         {
-            InitializeComponent();
+            String[] arguments = Environment.GetCommandLineArgs(); //Read Parameters
+            if(arguments.Length > 1) //Was the program called with parameters?
+            {
+                executeQuery(arguments[1]); //If there was a paramter -> execute the query with it.
+                Environment.Exit(1);
+            }
+            else
+            {
+                InitializeComponent();
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -66,7 +76,15 @@ namespace QueryMaster
                     csv = readSQLLine(dr, drlenght, csv);
                 }
 
-                saveQueryToCSV(csv, sqlFileName);
+                if (readLineFromDB)
+                {
+                    saveQueryToCSV(csv, sqlFileName);
+                }
+                else
+                {
+                    MessageBox.Show("No entries found!");
+                }
+                
             }
             catch (Exception ex)
             {
@@ -98,6 +116,7 @@ namespace QueryMaster
             }
             csv = csv.Remove(csv.Length - 1); //Cut last seperator
             csv += "\r\n"; //Add newline
+            readLineFromDB = true;
             return csv;
         }
 
